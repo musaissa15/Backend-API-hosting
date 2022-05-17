@@ -3,6 +3,7 @@ const request = require('supertest')
 const db = require("../db/connection")
 const seed = require("../db/seeds/seed")
 const testData = require("../db/data/test-data/index")
+const { response } = require('../app')
 
 
 
@@ -22,15 +23,24 @@ describe('Get /api/categories', () => {
         .get("/api/categories")
         .expect(200)
         .then(({body}) => {
-      
-        const {categories} = body
-        expect(body.categories.length).toBe(4)
-        categories.forEach((category) => {
-        expect(category).toMatchObject({
-            slug: expect.any(String),
-            description : expect.any(String)
-         })
-        
-        })
-    })});
+            const {categories} = body
+            expect(body.categories.length).toBe(4)
+            categories.forEach((category) => {
+                expect(category).toMatchObject({
+                slug: expect.any(String),
+                description : expect.any(String)
+                })
+                
+            })
+     })}) 
+    test('status:404, response to an error message when passed the wrong route', () => {
+                    return request(app)
+                    .get('/api/InvalidPath')
+                    .expect(404)
+                    .then(({body}) => {
+                        console.log(body)
+                        expect(body.msg).toBe('Invalid Path')
+
+                    })
+                });
 });
