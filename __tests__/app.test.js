@@ -70,9 +70,8 @@ describe("GET /api/reviews/:review_id", () => {
     return request(app)
       .get("/api/reviews/99999")
       .expect(404)
-        .then(({body}) =>{
-        
-          expect(body.msg).toBe("Not Found")
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
       });
   });
 });
