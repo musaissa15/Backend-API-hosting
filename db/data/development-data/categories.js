@@ -35,4 +35,3 @@ module.exports = [
       "Games where players construct unique points-gaining engines main element of the gameplay",
   },
 ];
-
