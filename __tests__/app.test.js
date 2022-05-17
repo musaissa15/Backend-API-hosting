@@ -24,7 +24,7 @@ describe('Get /api/categories', () => {
         .expect(200)
         .then(({body}) => {
             const {categories} = body
-            expect(body.categories.length).toBe(4)
+            expect(categories.length).toBe(4)
             categories.forEach((category) => {
                 expect(category).toMatchObject({
                 slug: expect.any(String),
@@ -38,7 +38,7 @@ describe('Get /api/categories', () => {
                     .get('/api/InvalidPath')
                     .expect(404)
                     .then(({body}) => {
-                        console.log(body)
+                        
                         expect(body.msg).toBe('Invalid Path')
 
                     })

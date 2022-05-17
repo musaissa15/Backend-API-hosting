@@ -6,13 +6,9 @@ const app = express();
 app.get('/api/categories', returnCategories)
 
 app.all('/*',(request,response,next) => {
-    response.status(404).send({msg:'Invalid Path'})
+    response.status(404).send({'Invalid Path'})
 })
 
-// app.use((error,request,response,next) => {
-// response.status(404).send({msg: 'Invalid Path'})
-//     next(error)
-// })
 
 app.use((err, req, res, next) => {
     console.log(err);
