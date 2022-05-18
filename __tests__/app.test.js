@@ -80,7 +80,8 @@ describe("GET /api/reviews/:review_id", () => {
 describe("PATCH /api/reviews/:review_id", () => {
 	test("Responses with the updated Review ", () => {
 		const updatedVotes = { inc_votes: 1 }
-		return request(app).patch("/api/reviews/2").send(updatedVotes)
+    return request(app).patch("/api/reviews/2")
+      .send(updatedVotes)
 		.expect(200)
 		.then(({body}) => {
       console.log(body)
@@ -97,5 +98,23 @@ describe("PATCH /api/reviews/:review_id", () => {
 					votes: 6,
 				});
 		});
+  });
+  test("status:400, response with an error message when user passes something not a number in inc_votes", () => {
+		const updatedVotes = {inc_votes : 'wrongDataType'}
+    return request(app)
+      .patch("/api/reviews/2")
+      .send(updatedVotes)
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Invalid input')
+      });
 	});
+ 
+   
+
+//  404 - valid number in path but doesn't match a review
+// 400 - something that is not a number as the id in the path
+// 400 - user passes something not a number in inc_votes
+// Add an item
+
 });

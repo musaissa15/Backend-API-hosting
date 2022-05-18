@@ -26,10 +26,15 @@ exports.returnReviews = (request, response, next) => {
 		});
 };
 
-exports.returnUpdatedReviews = (request, response) => {
+exports.returnUpdatedReviews = (request, response, next) => {
 	const { review_id } = request.params;
   const {inc_votes} = request.body;
-	updateReviews(review_id, inc_votes).then((newReview) => {	
-    response.status(200).send({review: newReview});
-	});
+	updateReviews(review_id, inc_votes)
+		.then((newReview) => {	
+    	response.status(200).send({review: newReview});
+		})
+		.catch((error) => {
+			next(error)
+		})
+	
 };

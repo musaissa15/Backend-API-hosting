@@ -23,15 +23,24 @@ exports.fetchReviews = (review_id) => {
 };
 
 exports.updateReviews = (review_id, inc_votes) => {
-  return db
+	return db
 		.query(
 			`UPDATE reviews
     SET votes = votes + $1
     WHERE review_id = $2
     RETURNING *`,
-			[inc_votes,review_id]
+			[inc_votes, review_id]
 		)
 		.then((results) => {
+			console.log(results.rows)
+			if (!results.rows) {
+				return Promise.reject({
+					status: 400,
+					msg: "Invalid input",
+				});
+			}
 			return results.rows[0];
 		});
-};
+
+}
+
