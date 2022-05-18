@@ -1,8 +1,9 @@
-const { response } = require("../app");
+const { response, request } = require("../app");
 const {
   fetchCategories,
   fetchReviews,
-  updateReviews,
+	updateReviews,
+  fetchUsers
 } = require("../model/model");
 
 exports.returnCategories = (request, response, next) => {
@@ -37,3 +38,11 @@ exports.returnUpdatedReviews = (request, response, next) => {
       next(error);
     });
 };
+
+exports.returnUsers = (request, response) => {
+	fetchUsers()
+		.then((users) => {
+	response.status(200).send({users})
+})
+	console.log("im in the controller <<<<<<")
+}

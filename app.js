@@ -2,7 +2,7 @@ const express = require("express");
 const {
   returnCategories,
   returnReviews,
-  returnUpdatedReviews,
+  returnUpdatedReviews, returnUsers
 } = require("./controller/controller");
 const app = express();
 
@@ -13,6 +13,8 @@ app.get("/api/categories", returnCategories);
 app.get("/api/reviews/:review_id", returnReviews);
 
 app.patch("/api/reviews/:review_id", returnUpdatedReviews);
+
+app.get("/api/users", returnUsers)
 
 app.all("/*", (request, response, next) => {
   response.status(404).send({ msg: "Invalid Path" });

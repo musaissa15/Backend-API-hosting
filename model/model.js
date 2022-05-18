@@ -1,3 +1,4 @@
+const {request, response} = require("../app");
 const db = require("../db/connection");
 const reviews = require("../db/data/test-data/reviews");
 
@@ -47,3 +48,10 @@ exports.updateReviews = (review_id, inc_votes) => {
       return results.rows[0];
     })
 };
+
+
+exports.fetchUsers = () => {
+	return db.query("SELECT * FROM users").then((users) => {
+		return users.rows
+	})
+}
