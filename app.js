@@ -29,7 +29,7 @@ app.use((error, request, response, next) => {
 
 app.use((error, request, response, next) => {
 	if (error.code === "23502") {
-		response.status(400).send({ msg: "Nothing inputed" });
+		response.status(400).send({ msg: "Bad Request" });
 	} else {
 		next(error);
 	}

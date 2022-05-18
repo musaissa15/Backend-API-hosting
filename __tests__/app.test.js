@@ -135,7 +135,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .send(updatedVotes)
       .expect(400)
       .then(({body}) => {
-        expect(body.msg).toBe("Nothing inputed");
+        expect(body.msg).toBe("Bad Request");
       });
   });
 });

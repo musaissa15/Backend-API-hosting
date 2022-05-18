@@ -41,7 +41,7 @@ exports.updateReviews = (review_id, inc_votes) => {
 	  else if (!inc_votes) {
 		 return Promise.reject({
 				status: 400,
-				msg: "Nothing inputed",
+				msg: "Bad Request",
 			});
 	  }
       return results.rows[0];
