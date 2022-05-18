@@ -32,15 +32,14 @@ exports.updateReviews = (review_id, inc_votes) => {
 			[inc_votes, review_id]
 		)
 		.then((results) => {
-			console.log(results.rows)
-			if (!results.rows) {
+			//console.log(results.rows[0])
+			if (!results.rows[0]) {
 				return Promise.reject({
-					status: 400,
-					msg: "Invalid input",
+					status: 404,
+					msg: "Not Found",
 				});
 			}
-			return results.rows[0];
-		});
-
+			return results.rows[0]
+		})
 }
 

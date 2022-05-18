@@ -26,6 +26,11 @@ app.use((error, request, response, next) => {
 	} else next(error);
 });
 
+// app.use((error, request, response, next) => {
+//   response.status(404).send({msg: "invalid input"})
+//   next(error)
+// })
+
 app.use((error, request, response, next) => {
 	response.status(500).send("Server Error!");
 });

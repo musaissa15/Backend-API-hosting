@@ -34,7 +34,7 @@ exports.returnUpdatedReviews = (request, response, next) => {
     	response.status(200).send({review: newReview});
 		})
 		.catch((error) => {
+			console.log(error)
 			next(error)
 		})
-	
 };

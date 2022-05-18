@@ -84,7 +84,6 @@ describe("PATCH /api/reviews/:review_id", () => {
       .send(updatedVotes)
 		.expect(200)
 		.then(({body}) => {
-      console.log(body)
        expect(body.review).toEqual({
 					review_id: 2,
           title: "Jenga",
@@ -108,13 +107,24 @@ describe("PATCH /api/reviews/:review_id", () => {
 			.then(({ body }) => {
 				expect(body.msg).toBe('Invalid input')
       });
-	});
- 
-   
-
-//  404 - valid number in path but doesn't match a review
-// 400 - something that is not a number as the id in the path
-// 400 - user passes something not a number in inc_votes
-// Add an item
-
+  });
+   test("status:404, response with an error message when user passes in a valid number with no review", () => {
+			return request(app)
+				.patch("/api/reviews/99")
+				.expect(404)
+				.then(({ body }) => {
+					expect(body.msg).toBe("Not Found");
+				});
+   });
+  
+  test('status:400, response with an error message when something that is not a number is passed an id in the path', () => {
+    const updatedVotes = { inc_votes: "1" };
+    return request(app)
+      .patch('/api/reviews/NotaNumber')
+      .send(updatedVotes)
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Invalid input')
+      })
+  });
 });
