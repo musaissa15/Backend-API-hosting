@@ -44,7 +44,7 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body.review).toEqual({
+        expect(body.review).toMatchObject({
           review_id: 1,
           title: "Agricola",
           designer: "Uwe Rosenberg",
@@ -134,28 +134,38 @@ describe("PATCH /api/reviews/:review_id", () => {
       .patch("/api/reviews/2")
       .send(updatedVotes)
       .expect(400)
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(body.msg).toBe("Bad Request");
       });
   });
 });
 
-describe('GET api/users', () => {
-  test('Responds withan array of objects each object should have the following property', () => { 
+describe("GET api/users", () => {
+  test("Responds withan array of objects each object should have the following property", () => {
     return request(app)
-      .get('/api/users')
+      .get("/api/users")
       .expect(200)
-      .then(({body}) => {
-      const {users} = body
-      expect(users.length).toBe(4)
-      users.forEach((user) => {
-        expect(user).toMatchObject({
-          username: expect.any(String),
-          name: expect.any(String),
-          avatar_url: expect.any(String)
-        })
-      })
-    })
-    
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+});
+
+describe("GET /api/reviews/:review_id", () => {
+  test("reponses with a comment_count object ", () => {
+    return request(app)
+      .get("/api/reviews/2")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.review).toMatchObject({ comment_count: 3 })
+      });
   });
 });

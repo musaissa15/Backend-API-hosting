@@ -10,17 +10,31 @@ exports.fetchCategories = () => {
 
 exports.fetchReviews = (review_id) => {
   return db
-    .query("SELECT * FROM reviews WHERE review_id = $1", [review_id])
-    .then((results) => {
-      const pickedReview = results.rows[0];
-      if (!pickedReview) {
-        return Promise.reject({
-          status: 404,
-          msg: "Not Found",
-        });
-      }
-      return pickedReview;
-    });
+		.query(
+	`SELECT reviews.*, COUNT(comments.review_id):: int AS comment_count
+      FROM reviews
+      LEFT JOIN comments
+      ON comments.review_id = reviews.review_id
+      WHERE reviews.review_id = $1
+      GROUP BY reviews.review_id`,
+				[review_id])
+		.then((results) => {
+			const pickedReview = results.rows[0];
+			if (!pickedReview) {
+				return Promise.reject({
+					status: 404,
+					msg: "Not Found",
+				});
+			}
+			return pickedReview;
+		});
+      `SELECT reviews.*, COUNT(comments.review_id) AS comment_count
+      FROM reviews
+      LEFT JOIN comments
+      ON comments.review_id = reviews.review_id
+      WHERE reviews.review_id = $1
+      GROUP BY reviews.review_id`,
+				[review_id];
 };
 
 exports.updateReviews = (review_id, inc_votes) => {
