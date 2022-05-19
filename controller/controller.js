@@ -2,8 +2,8 @@ const { response, request } = require("../app");
 const {
   fetchCategories,
   fetchReviews,
-	updateReviews,
-  fetchUsers
+  updateReviews,
+  fetchUsers,
 } = require("../model/model");
 
 exports.returnCategories = (request, response, next) => {
@@ -40,9 +40,7 @@ exports.returnUpdatedReviews = (request, response, next) => {
 };
 
 exports.returnUsers = (request, response) => {
-	fetchUsers()
-		.then((users) => {
-	response.status(200).send({users})
-})
-	
-}
+  fetchUsers().then((users) => {
+    response.status(200).send({ users });
+  });
+};
