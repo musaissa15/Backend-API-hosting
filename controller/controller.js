@@ -44,5 +44,5 @@ exports.returnUsers = (request, response) => {
 		.then((users) => {
 	response.status(200).send({users})
 })
-	console.log("im in the controller <<<<<<")
+	
 }
