@@ -66,7 +66,7 @@ exports.fetchUsers = () => {
 exports.fetchAllReviews = () => {
   return db
 		.query(
-			`SELECT reviews.*, COUNT(comments.review_id):: int AS comment_count
+			`SELECT reviews.review_id, reviews.title, reviews.owner, reviews.review_img_url, reviews.category, reviews.created_at, reviews.votes, COUNT(comments.comment_id):: int AS comment_count
       FROM reviews
       LEFT JOIN comments
       ON comments.review_id = reviews.review_id
@@ -75,5 +75,7 @@ exports.fetchAllReviews = () => {
 		.then((reviews) => {
 			console.log(reviews.rows);
 			return reviews.rows;
-		});
+    }).catch((error) => {
+      console.log(error)
+    })
 }
