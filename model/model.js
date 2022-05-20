@@ -66,14 +66,21 @@ exports.fetchUsers = () => {
 exports.fetchAllReviews = () => {
   return db
 		.query(
-			`SELECT reviews.*, COUNT(comments.review_id):: int AS comment_count
+			`SELECT reviews.review_id, reviews.title, reviews.owner, reviews.review_img_url, reviews.category, reviews.created_at, reviews.votes, COUNT(comments.comment_id):: int AS comment_count
       FROM reviews
       LEFT JOIN comments
       ON comments.review_id = reviews.review_id
       GROUP BY reviews.review_id ORDER BY created_at desc`
 		)
 		.then((reviews) => {
-			console.log(reviews.rows);
 			return reviews.rows;
-		});
+    }).catch((error) => {
+      console.log(error)
+    })
+}
+
+exports.fetchComments = (review_id) => {
+  return db.query(`SELECT * FROM comments WHERE review_id = $1`, [review_id]).then((results) => {
+    return results.rows
+  })
 }

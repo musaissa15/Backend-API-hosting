@@ -4,7 +4,7 @@ const {
   fetchReviews,
   updateReviews,
   fetchUsers,
-fetchAllReviews} = require("../model/model");
+fetchAllReviews, fetchComments} = require("../model/model");
 
 exports.returnCategories = (request, response, next) => {
   fetchCategories()
@@ -35,7 +35,9 @@ exports.returnUpdatedReviews = (request, response, next) => {
       response.status(200).send({ review: newReview });
     })
     .catch((error) => {
+      console.log(error)
       next(error);
+
     });
 };
 
@@ -50,3 +52,16 @@ exports.returnAllReviews = (request, response) => {
     response.status(200).send({ reviews });
   });
 };
+
+exports.returnComments = (request, response, next) => {
+  const {review_id} = request.params 
+
+  Promise.all([fetchReviews(review_id), fetchComments(review_id)])
+    .then(([, review_idComments]) => {
+      console.log(review_idComments)
+			response.status(200).send({ review_idComments });
+		})
+		.catch((error) => {
+			next(error);
+		});
+}

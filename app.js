@@ -4,7 +4,7 @@ const {
   returnReviews,
   returnUpdatedReviews,
   returnUsers,
-  returnAllReviews,
+  returnAllReviews, returnComments
 } = require("./controller/controller");
 const app = express();
 
@@ -20,20 +20,21 @@ app.get("/api/users", returnUsers);
 
 app.get("/api/reviews", returnAllReviews);
 
+app.get("/api/reviews/:review_id/comments", returnComments)
+
 app.all("/*", (request, response, next) => {
-  response.status(404).send({ msg: "Invalid Path" });
+  response.status(404).send({msg: "Invalid Path"});
+  
 });
 
 app.use((error, request, response, next) => {
   if (error.status && error.msg) {
     response.status(error.status).send({ msg: error.msg });
-  } else if (error.code === "22P02") {
-    response.status(400).send({ msg: "Invalid input" });
   } else next(error);
 });
 
 app.use((error, request, response, next) => {
-  if (error.code === "23502") {
+  if (error.code === "23502" || error.code === "22P02") {
     response.status(400).send({ msg: "Bad Request" });
   } else {
     next(error);
@@ -41,6 +42,7 @@ app.use((error, request, response, next) => {
 });
 
 app.use((error, request, response, next) => {
+  console.log(error, 'Uncaught Error')
   response.status(500).send("Server Error!");
 });
 
