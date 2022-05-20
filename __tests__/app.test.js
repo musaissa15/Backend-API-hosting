@@ -64,7 +64,7 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/notAnumber")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid input");
+        expect(body.msg).toBe("Bad Request");
       });
   });
   test("status:404, response to an error message when passed a number with no review", () => {
@@ -106,7 +106,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .send(updatedVotes)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid input");
+        expect(body.msg).toBe("Bad Request");
       });
   });
   test("status:404, response with an error message when user passes in a valid number with no review", () => {
@@ -125,7 +125,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .send(updatedVotes)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid input");
+        expect(body.msg).toBe("Bad Request");
       });
   });
 
@@ -200,7 +200,27 @@ describe("GET /api/reviews", () => {
 	});
 });
 
-describe.only('GET /api/reviews/:review_id/comments', () => {
+describe('GET /api/reviews/:review_id/comments', () => {
+  
+  test('comments should have properties', () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({body}) => {
+        const {review_idComments} = body;
+        expect(review_idComments.length).toBe(3);
+        review_idComments.forEach((comment) => {
+          expect(comment).toEqual(expect.objectContaining({
+						comment_id: expect.any(Number),
+						body: expect.any(String),
+						votes: expect.any(Number),
+						author: expect.any(String),
+						review_id: 2,
+						created_at: expect.any(String),
+					}));
+        })
+      });
+  })
   test('200: Responds with an array of comments for the given review_id of which each comment should have the following properties in the test ', () => {
     return request(app).get('/api/reviews/2/comments').expect(200).then(({body}) => {
       const {review_idComments} = body
@@ -252,7 +272,7 @@ describe.only('GET /api/reviews/:review_id/comments', () => {
 			});
   });
   test("status : 200 Responds with an  empty array if review_id has no comment ", () => {
-     return request(app)
+    return request(app)
 			.get("/api/reviews/1/comments")
 			.expect(200)
 			.then(({ body }) => {
@@ -260,3 +280,4 @@ describe.only('GET /api/reviews/:review_id/comments', () => {
 			});
   });
 });
+

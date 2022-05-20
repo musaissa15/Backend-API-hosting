@@ -74,8 +74,6 @@ exports.fetchAllReviews = () => {
 		)
 		.then((reviews) => {
 			return reviews.rows;
-    }).catch((error) => {
-      console.log(error)
     })
 }
 

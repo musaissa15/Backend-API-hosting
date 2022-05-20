@@ -54,14 +54,13 @@ exports.returnAllReviews = (request, response) => {
 };
 
 exports.returnComments = (request, response, next) => {
-  const {review_id} = request.params 
+  const {review_id} = request.params;
 
   Promise.all([fetchReviews(review_id), fetchComments(review_id)])
     .then(([, review_idComments]) => {
-      console.log(review_idComments)
-			response.status(200).send({ review_idComments });
-		})
-		.catch((error) => {
-			next(error);
-		});
-}
+      response.status(200).send({review_idComments});
+    })
+    .catch((error) => {
+      next(error)
+    })
+};
