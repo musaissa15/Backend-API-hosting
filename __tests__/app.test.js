@@ -142,7 +142,7 @@ describe("PATCH /api/reviews/:review_id", () => {
 });
 
 describe("GET api/users", () => {
-  test("Responds withan array of objects each object should have the following property", () => {
+  test("Status:200 Responds withan array of objects each object should have the following property", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
@@ -161,7 +161,7 @@ describe("GET api/users", () => {
 });
 
 describe("GET /api/reviews/:review_id", () => {
-  test("reponses with a comment_count object ", () => {
+  test("200: reponses with a comment_count object ", () => {
     return request(app)
       .get("/api/reviews/2")
       .expect(200)
@@ -173,7 +173,7 @@ describe("GET /api/reviews/:review_id", () => {
 
 
 describe("GET /api/reviews", () => {
-	test("Responds withan array of objects each object should have the following property", () => {
+	test("200:Responds withan array of objects each object should have the following property", () => {
 		return request(app)
 			.get("/api/reviews")
 			.expect(200)
@@ -198,4 +198,65 @@ describe("GET /api/reviews", () => {
         expect(reviews).toBeSortedBy("created_at", { descending: true });
 			});
 	});
+});
+
+describe.only('GET /api/reviews/:review_id/comments', () => {
+  test('200: Responds with an array of comments for the given review_id of which each comment should have the following properties in the test ', () => {
+    return request(app).get('/api/reviews/2/comments').expect(200).then(({body}) => {
+      const {review_idComments} = body
+      expect(review_idComments).toEqual([
+				{
+					comment_id : 1 ,
+          body: "I loved this game too!",
+					votes: 16,
+					author: "bainesface",
+					review_id: 2,
+					created_at: "2017-11-22T12:43:33.389Z",
+				},
+        {
+          comment_id : 4,
+					body: "EPIC board game!",
+					votes: 16,
+					author: "bainesface",
+					review_id: 2,
+					created_at: "2017-11-22T12:36:03.389Z",
+				},
+        {
+          comment_id : 5,
+					body: "Now this is a story all about how, board games turned my life upside down",
+					votes: 13,
+					author: "mallionaire",
+					review_id: 2,
+					created_at: "2021-01-18T10:24:05.410Z",
+				},
+			]);
+
+    }) 
+  });
+
+  test('Status :400 Should respond with an error message when something not a number passed as the id in the path ', () => {
+     return request(app)
+				.get("/api/reviews/NotANumber/comments")
+				.expect(400)
+				.then(({ body }) => {
+					expect(body.msg).toBe("Bad Request");
+				});
+  });
+
+  test('Status : 404 responds with an error message when a valid number but not a number that matches an id in path', () => {
+    return request(app)
+			.get("/api/reviews/999/comments")
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Not Found");
+			});
+  });
+  test("status : 200 Responds with an  empty array if review_id has no comment ", () => {
+     return request(app)
+			.get("/api/reviews/1/comments")
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.review_idComments).toEqual([]);
+			});
+  });
 });

@@ -73,9 +73,14 @@ exports.fetchAllReviews = () => {
       GROUP BY reviews.review_id ORDER BY created_at desc`
 		)
 		.then((reviews) => {
-			console.log(reviews.rows);
 			return reviews.rows;
     }).catch((error) => {
       console.log(error)
     })
+}
+
+exports.fetchComments = (review_id) => {
+  return db.query(`SELECT * FROM comments WHERE review_id = $1`, [review_id]).then((results) => {
+    return results.rows
+  })
 }
