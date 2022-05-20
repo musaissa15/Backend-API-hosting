@@ -4,7 +4,7 @@ const {
   fetchReviews,
   updateReviews,
   fetchUsers,
-} = require("../model/model");
+fetchAllReviews} = require("../model/model");
 
 exports.returnCategories = (request, response, next) => {
   fetchCategories()
@@ -42,5 +42,11 @@ exports.returnUpdatedReviews = (request, response, next) => {
 exports.returnUsers = (request, response) => {
   fetchUsers().then((users) => {
     response.status(200).send({ users });
+  });
+};
+
+exports.returnAllReviews = (request, response) => {
+  fetchAllReviews().then((reviews) => {
+    response.status(200).send({ reviews });
   });
 };

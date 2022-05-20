@@ -3,6 +3,7 @@ const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+require('jest-sorted')
 
 beforeEach(() => {
   return seed(testData);
@@ -168,4 +169,34 @@ describe("GET /api/reviews/:review_id", () => {
         expect(body.review).toMatchObject({ comment_count: 3 })
       });
   });
+});
+
+
+describe("GET /api/reviews", () => {
+	test("Responds withan array of objects each object should have the following property", () => {
+		return request(app)
+			.get("/api/reviews")
+			.expect(200)
+			.then(({ body }) => {
+				const { reviews } = body;
+        expect(reviews.length).toBe(13);
+				
+        reviews.forEach((review) => {
+					expect(review)
+						.toMatchObject({
+							review_id: expect.any(Number),
+							title: expect.any(String),
+							owner: expect.any(String),
+							review_img_url: expect.any(String),
+							review_body: expect.any(String),
+							category: expect.any(String),
+							created_at: expect.any(String),
+							votes: expect.any(Number),
+							comment_count: expect.any(Number),
+						})
+						
+        });
+        expect(reviews).toBeSortedBy("created_at", { descending: true });
+			});
+	});
 });
