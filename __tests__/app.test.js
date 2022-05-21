@@ -281,3 +281,29 @@ describe('GET /api/reviews/:review_id/comments', () => {
   });
 });
 
+
+describe('POST /api/reviews/:review_id/comments', () => {
+  test('Status : 201 responds with an object with the following requests ', () => {
+    const newComments = {
+			author: "mallionaire",
+			body: "This is a sick game",
+		};
+		return request(app)
+			.post("/api/reviews/3/comments").send(newComments)
+			.expect(201)
+      .then(({body, params}) => {
+        console.log(body)
+        expect(params).toBe(3)
+        expect(body.comment).toEqual(
+					expect.objectContaining({
+						author: "mallionaire",
+						body: "This is a sick game",
+            votes: expect.any(Number),
+            comment_id : 7,
+						review_id: 3,
+						created_at: expect.any(String),
+					})
+				);
+			});
+  });
+});

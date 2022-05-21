@@ -1,10 +1,12 @@
 const express = require("express");
 const {
-  returnCategories,
-  returnReviews,
-  returnUpdatedReviews,
-  returnUsers,
-  returnAllReviews, returnComments
+	returnCategories,
+	returnReviews,
+	returnUpdatedReviews,
+	returnUsers,
+	returnAllReviews,
+	returnComments,
+	postCommentByReviewId,
 } = require("./controller/controller");
 const app = express();
 
@@ -21,6 +23,8 @@ app.get("/api/users", returnUsers);
 app.get("/api/reviews", returnAllReviews);
 
 app.get("/api/reviews/:review_id/comments", returnComments)
+
+app.post('/api/reviews/:reviews/comments', postCommentByReviewId)
 
 app.all("/*", (request, response, next) => {
   response.status(404).send({msg: "Invalid Path"});

@@ -4,7 +4,7 @@ const {
   fetchReviews,
   updateReviews,
   fetchUsers,
-fetchAllReviews, fetchComments} = require("../model/model");
+fetchAllReviews, fetchComments, insertCommentsByReviewId} = require("../model/model");
 
 exports.returnCategories = (request, response, next) => {
   fetchCategories()
@@ -35,7 +35,7 @@ exports.returnUpdatedReviews = (request, response, next) => {
       response.status(200).send({ review: newReview });
     })
     .catch((error) => {
-      console.log(error)
+      
       next(error);
 
     });
@@ -64,3 +64,16 @@ exports.returnComments = (request, response, next) => {
       next(error)
     })
 };
+
+
+exports.postCommentByReviewId = (request, response, next) => {
+ 
+  const {body} = request;
+  const {review_id} = request.params
+ 
+  insertCommentsByReviewId(body, review_id)
+    .then((comment) => {
+    response.status(201).send({comment})
+  })
+}
+

@@ -82,3 +82,18 @@ exports.fetchComments = (review_id) => {
     return results.rows
   })
 }
+
+exports.insertCommentsByReviewId = ({author, body}, review_id) => {
+  console.log('im in the model <<<<<<<<<<')
+  return db
+		.query(
+			`INSERT INTO comments (author, body, review_id)
+    VALUES ($1, $2, $3)
+    RETURNING *`,
+			[author, body, review_id]
+		)
+		.then((results) => {
+			return results.rows[0];
+		});
+}
+
