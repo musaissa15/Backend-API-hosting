@@ -67,13 +67,13 @@ exports.returnComments = (request, response, next) => {
 
 
 exports.postCommentByReviewId = (request, response, next) => {
- 
-  const {body} = request;
-  const {review_id} = request.params
- 
+  const {body} = request
+  const {reviews:review_id} = request.params
   insertCommentsByReviewId(body, review_id)
-    .then((comment) => {
-    response.status(201).send({comment})
+    .then((returnComment) => {
+    response.status(201).send({returnComment})
+    }).catch((error) => {
+    next(error)
   })
 }
 

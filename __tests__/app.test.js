@@ -13,6 +13,9 @@ afterAll(() => {
   return db.end();
 });
 
+
+
+
 describe("Get /api/categories", () => {
   test("200: response with all categories, with slug and description", () => {
     return request(app)
@@ -38,6 +41,11 @@ describe("Get /api/categories", () => {
       });
   });
 });
+
+
+
+
+
 
 describe("GET /api/reviews/:review_id", () => {
   test("200: response with all revies with all its properties", () => {
@@ -76,6 +84,14 @@ describe("GET /api/reviews/:review_id", () => {
       });
   });
 });
+
+
+
+
+
+
+
+
 
 describe("PATCH /api/reviews/:review_id", () => {
   test("Responses with the updated Review ", () => {
@@ -141,6 +157,11 @@ describe("PATCH /api/reviews/:review_id", () => {
   });
 });
 
+
+
+
+
+
 describe("GET api/users", () => {
   test("Status:200 Responds withan array of objects each object should have the following property", () => {
     return request(app)
@@ -172,6 +193,11 @@ describe("GET /api/reviews/:review_id", () => {
 });
 
 
+
+
+
+
+
 describe("GET /api/reviews", () => {
 	test("200:Responds withan array of objects each object should have the following property", () => {
 		return request(app)
@@ -199,6 +225,10 @@ describe("GET /api/reviews", () => {
 			});
 	});
 });
+
+
+
+
 
 describe('GET /api/reviews/:review_id/comments', () => {
   
@@ -282,28 +312,60 @@ describe('GET /api/reviews/:review_id/comments', () => {
 });
 
 
+
+
+
 describe('POST /api/reviews/:review_id/comments', () => {
+  
+  
+  
   test('Status : 201 responds with an object with the following requests ', () => {
     const newComments = {
-			author: "mallionaire",
+			author: "bainesface",
 			body: "This is a sick game",
-		};
-		return request(app)
+    };
+    		
+    return request(app)
 			.post("/api/reviews/3/comments").send(newComments)
 			.expect(201)
-      .then(({body, params}) => {
-        console.log(body)
-        expect(params).toBe(3)
-        expect(body.comment).toEqual(
+      .then(({body}) => {
+        expect(body.returnComment).toEqual(
 					expect.objectContaining({
-						author: "mallionaire",
+						author: "bainesface",
 						body: "This is a sick game",
-            votes: expect.any(Number),
-            comment_id : 7,
-						review_id: 3,
-						created_at: expect.any(String),
 					})
 				);
 			});
   });
+  test('status : 400 responds with an error message when review_id is not a number ', () => {
+      const newComments = {
+				author: "bainesface",
+				body: "This is a sick game",
+			};
+    return request(app)
+      .post("/api/reviews/notAnumber/comments").send(newComments).expect(400)
+      .then(({body}) => {
+      expect(body.msg).toBe('Bad Request')
+    })
+  });
+  test("status : 400 response with an error message when  body does not contain both mandatory keys", () => {
+    const newComments = {}
+    return request(app).post('/api/reviews/notAnumber/comments').send(newComments).expect(400).then(({body}) => {
+      expect(body.msg).toBe('Bad Request')
+    })
+  })
+  test("status: 404, response with an error message when user not in the database tries to post", () => {
+    const newComments =
+    {
+      author: "NotAnAuthor",
+      body: "This is a sick game"
+    };
+		return request(app)
+			.post("/api/reviews/3/comments")
+			.send(newComments)
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Not Found");
+			});
+	});
 });
