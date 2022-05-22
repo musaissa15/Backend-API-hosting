@@ -62,45 +62,44 @@ exports.fetchUsers = () => {
   });
 };
 
-
 exports.fetchAllReviews = () => {
   return db
-		.query(
-			`SELECT reviews.review_id, reviews.title, reviews.owner, reviews.review_img_url, reviews.category, reviews.created_at, reviews.votes, COUNT(comments.comment_id):: int AS comment_count
+    .query(
+      `SELECT reviews.review_id, reviews.title, reviews.owner, reviews.review_img_url, reviews.category, reviews.created_at, reviews.votes, COUNT(comments.comment_id):: int AS comment_count
       FROM reviews
       LEFT JOIN comments
       ON comments.review_id = reviews.review_id
       GROUP BY reviews.review_id ORDER BY created_at desc`
-		)
-		.then((reviews) => {
-			return reviews.rows;
-    })
-}
+    )
+    .then((reviews) => {
+      return reviews.rows;
+    });
+};
 
 exports.fetchComments = (review_id) => {
-  return db.query(`SELECT * FROM comments WHERE review_id = $1`, [review_id]).then((results) => {
-    return results.rows
-  })
-}
-
-exports.insertCommentsByReviewId = ({author, body}, review_id) => {
   return db
-		.query(
-			`INSERT INTO comments (author, body, review_id)
+    .query(`SELECT * FROM comments WHERE review_id = $1`, [review_id])
+    .then((results) => {
+      return results.rows;
+    });
+};
+
+exports.insertCommentsByReviewId = ({ author, body }, review_id) => {
+  return db
+    .query(
+      `INSERT INTO comments (author, body, review_id)
     VALUES ($1, $2, $3)
     RETURNING author, body`,
-			[author, body, review_id]
-		)
+      [author, body, review_id]
+    )
     .then((results) => {
       if (!author && body) {
         Promise.reject({
           status: 400,
-          msg : 'Bad Request'
+          msg: "Bad Request",
         });
       }
-   
-     
-			return results.rows[0];
-		})
-}
 
+      return results.rows[0];
+    });
+};
