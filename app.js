@@ -1,14 +1,15 @@
 const express = require("express");
+const app = express()
 const {
-  returnCategories,
   returnReviews,
   returnUpdatedReviews,
-  returnUsers,
-  returnAllReviews,
-  returnComments,
-  postCommentByReviewId,
-} = require("./controller/controller");
-const app = express();
+  returnAllReviews
+} = require('./controller/reviews.controller');
+const {returnCategories} = require('./controller/categories.controller')
+const {returnComments, postCommentByReviewId} = require('./controller/comments.controller')
+const {returnUsers} = require('./controller/users.controller')
+const {handleCustomErrors, handlePsqlErrors, handleServerErrrors} = require('./errorHandlers');
+
 
 app.use(express.json());
 
@@ -30,25 +31,10 @@ app.all("/*", (request, response, next) => {
   response.status(404).send({ msg: "Invalid Path" });
 });
 
-app.use((error, request, response, next) => {
-  if (error.status && error.msg) {
-    response.status(error.status).send({ msg: error.msg });
-  } else next(error);
-});
+app.use(handleCustomErrors);
 
-app.use((error, request, response, next) => {
-  if (error.code === "23502" || error.code === "22P02") {
-    response.status(400).send({ msg: "Bad Request" });
-  } else if (error.code === "23503") {
-    response.status(404).send({ msg: "Not Found" });
-  }
+app.use(handlePsqlErrors);
 
-  next(error);
-});
-
-app.use((error, request, response, next) => {
-  console.log(error, "Uncaught Error");
-  response.status(500).send("Server Error!");
-});
+app.use(handleServerErrrors);
 
 module.exports = app;
