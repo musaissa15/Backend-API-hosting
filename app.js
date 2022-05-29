@@ -1,15 +1,22 @@
 const express = require("express");
-const app = express()
+const app = express();
 const {
   returnReviews,
   returnUpdatedReviews,
-  returnAllReviews
-} = require('./controller/reviews.controller');
-const {returnCategories} = require('./controller/categories.controller')
-const {returnComments, postCommentByReviewId} = require('./controller/comments.controller')
-const {returnUsers} = require('./controller/users.controller')
-const {handleCustomErrors, handlePsqlErrors, handleServerErrrors} = require('./errorHandlers');
-
+  returnAllReviews,
+} = require("./controller/reviews.controller");
+const { returnCategories } = require("./controller/categories.controller");
+const {
+  returnComments,
+  postCommentByReviewId,
+  removedComments,
+} = require("./controller/comments.controller");
+const { returnUsers } = require("./controller/users.controller");
+const {
+  handleCustomErrors,
+  handlePsqlErrors,
+  handleServerErrrors,
+} = require("./errorHandlers");
 
 app.use(express.json());
 
@@ -26,6 +33,8 @@ app.get("/api/reviews", returnAllReviews);
 app.get("/api/reviews/:review_id/comments", returnComments);
 
 app.post("/api/reviews/:reviews/comments", postCommentByReviewId);
+
+app.delete("/api/comments/:comment_id", removedComments);
 
 app.all("/*", (request, response, next) => {
   response.status(404).send({ msg: "Invalid Path" });

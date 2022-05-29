@@ -195,6 +195,15 @@ describe("GET /api/reviews", () => {
         expect(reviews).toBeSortedBy("created_at", { descending: true });
       });
   });
+
+  // test('200:The end point should also accept the following queries - sort_by , which sorts the reviews by any valid column (defaults to date)', () => {
+  //   return request(app)
+  //     .get("/api/reviews")
+  //     .expect(200)
+  //     .then(({body}) => {
+  //       expect(body.reviews).toBeSortedBy('created_at')
+  //   })
+  // });
 });
 
 describe("GET /api/reviews/:review_id/comments", () => {
@@ -324,7 +333,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
-  test("status: 404, response with an error message when user not in the database tries to post", () => {
+  test("status : 404 response with an error message when user not in the database tries to post", () => {
     const newComments = {
       author: "NotAnAuthor",
       body: "This is a sick game",
@@ -336,5 +345,31 @@ describe("POST /api/reviews/:review_id/comments", () => {
       .then(({ body }) => {
         expect(body.msg).toBe("Not Found");
       });
+  });
+});
+
+describe(" DELETE /api/comments/:comment_id", () => {
+  test("should delete the given comment by comment_id", () => {
+    return request(app)
+      .delete("/api/comments/2")
+      .expect(204);
+  });
+  
+  // test('status : 404 responses with an error message when the comment id in the path does not exist', () => {
+  //   return request(app)
+  //     .delete("/api/comments/999")
+  //     .expect(404)
+  //     .then(({body}) => {
+  //       expect(body.msg).toBe('Not Found')
+  //     })
+  // });
+
+  test('status : 400 responds with an error message when comment_id in path is not a number', () => {
+     return request(app)
+				.delete("/api/comments/NotANumber")
+				.expect(400)
+				.then(({ body }) => {
+					expect(body.msg).toBe("Bad Request");
+				});
   });
 });
