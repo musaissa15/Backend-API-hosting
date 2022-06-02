@@ -27,8 +27,13 @@ exports.returnUpdatedReviews = (request, response, next) => {
     });
 };
 
-exports.returnAllReviews = (request, response) => {
-  fetchAllReviews().then((reviews) => {
-    response.status(200).send({ reviews });
-  });
+exports.returnAllReviews = (request, response, next) => {
+  const {sort_by} = request.query
+  fetchAllReviews(sort_by)
+		.then((reviews) => {
+			response.status(200).send({ reviews });
+		})
+		.catch((error) => {
+			next(error);
+		});
 };

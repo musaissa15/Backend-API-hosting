@@ -1,4 +1,4 @@
-const {request, response} = require("../app");
+const { request, response } = require("../app");
 const {
   fetchComments,
   insertCommentsByReviewId,
@@ -30,11 +30,12 @@ exports.postCommentByReviewId = (request, response, next) => {
 };
 
 exports.removedComments = (request, response, next) => {
-	const {comment_id} = request.params
-	deleteTheComments(comment_id)
-		.then((comment) => {
-		response.status(204).send({comment})
-		}).catch((error) => {
-		next(error)
-	})
-}
+  const { comment_id } = request.params;
+  deleteTheComments(comment_id)
+    .then(() => {
+      response.status(204).send();
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
