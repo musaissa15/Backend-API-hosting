@@ -17,7 +17,8 @@ exports.returnReviews = (request, response, next) => {
 
 exports.returnUpdatedReviews = (request, response, next) => {
   const { review_id } = request.params;
-  const { inc_votes } = request.body;
+  const {inc_votes} = request.body;
+  
   updateReviews(review_id, inc_votes)
     .then((newReview) => {
       response.status(200).send({ review: newReview });
@@ -28,12 +29,13 @@ exports.returnUpdatedReviews = (request, response, next) => {
 };
 
 exports.returnAllReviews = (request, response, next) => {
-  const {sort_by} = request.query
-  fetchAllReviews(sort_by)
-		.then((reviews) => {
-			response.status(200).send({ reviews });
-		})
-		.catch((error) => {
-			next(error);
-		});
+  const {sort_by, order, category} = request.query;
+  console.log(request.query);
+  fetchAllReviews(sort_by, order, category)
+    .then((reviews) => {
+      response.status(200).send({ reviews });
+    })
+    .catch((error) => {
+      next(error);
+    });
 };
