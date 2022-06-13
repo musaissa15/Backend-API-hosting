@@ -1,16 +1,31 @@
+const cors = require("cors");
+
 const express = require("express");
+const app = express();
 const {
-	returnCategories,
 	returnReviews,
 	returnUpdatedReviews,
-	returnUsers,
 	returnAllReviews,
+} = require("./controller/reviews.controller");
+const {returnCategories} = require("./controller/categories.controller");
+const {getAPI} = require('./controller/api.controller')
+const {
 	returnComments,
 	postCommentByReviewId,
-} = require("./controller/controller");
-const app = express();
+	removedComments,
+} = require("./controller/comments.controller");
+const { returnUsers } = require("./controller/users.controller");
+const {
+	handleCustomErrors,
+	handlePsqlErrors,
+	handleServerErrrors,
+} = require("./errorHandlers");
+
+app.use(cors());
 
 app.use(express.json());
+
+app.get('/api', getAPI)
 
 app.get("/api/categories", returnCategories);
 
@@ -22,37 +37,20 @@ app.get("/api/users", returnUsers);
 
 app.get("/api/reviews", returnAllReviews);
 
-app.get("/api/reviews/:review_id/comments", returnComments)
+app.get("/api/reviews/:review_id/comments", returnComments);
 
-app.post('/api/reviews/:reviews/comments', postCommentByReviewId)
+app.post("/api/reviews/:reviews/comments", postCommentByReviewId);
+
+app.delete("/api/comments/:comment_id", removedComments);
 
 app.all("/*", (request, response, next) => {
-  response.status(404).send({msg: "Invalid Path"});
-  
+	response.status(404).send({ msg: "Invalid Path" });
 });
 
-app.use((error, request, response, next) => {
-  if (error.status && error.msg) {
-    response.status(error.status).send({ msg: error.msg });
-  } else next(error);
-});
+app.use(handleCustomErrors);
 
-app.use((error, request, response, next) => {
-  if (error.code === "23502" || error.code === "22P02") {
-    response.status(400).send({msg: "Bad Request"});
-  } else if (error.code === "23503") {
-    
-    response.status(404).send({msg: "Not Found"})
+app.use(handlePsqlErrors);
 
-  }
-    
-    next(error);
-  }
-);
-
-app.use((error, request, response, next) => {
-  console.log(error, 'Uncaught Error')
-  response.status(500).send("Server Error!");
-});
+app.use(handleServerErrrors);
 
 module.exports = app;

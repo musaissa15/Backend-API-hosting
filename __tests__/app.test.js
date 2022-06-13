@@ -3,7 +3,7 @@ const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
-require('jest-sorted')
+require("jest-sorted");
 
 beforeEach(() => {
   return seed(testData);
@@ -12,9 +12,6 @@ beforeEach(() => {
 afterAll(() => {
   return db.end();
 });
-
-
-
 
 describe("Get /api/categories", () => {
   test("200: response with all categories, with slug and description", () => {
@@ -41,11 +38,6 @@ describe("Get /api/categories", () => {
       });
   });
 });
-
-
-
-
-
 
 describe("GET /api/reviews/:review_id", () => {
   test("200: response with all revies with all its properties", () => {
@@ -84,14 +76,6 @@ describe("GET /api/reviews/:review_id", () => {
       });
   });
 });
-
-
-
-
-
-
-
-
 
 describe("PATCH /api/reviews/:review_id", () => {
   test("Responses with the updated Review ", () => {
@@ -157,11 +141,6 @@ describe("PATCH /api/reviews/:review_id", () => {
   });
 });
 
-
-
-
-
-
 describe("GET api/users", () => {
   test("Status:200 Responds withan array of objects each object should have the following property", () => {
     return request(app)
@@ -187,185 +166,257 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/2")
       .expect(200)
       .then(({ body }) => {
-        expect(body.review).toMatchObject({ comment_count: 3 })
+        expect(body.review).toMatchObject({ comment_count: 3 });
       });
   });
 });
 
-
-
-
-
-
-
 describe("GET /api/reviews", () => {
-	test("200:Responds withan array of objects each object should have the following property", () => {
-		return request(app)
-			.get("/api/reviews")
-			.expect(200)
-			.then(({ body }) => {
-				const { reviews } = body;
+  test("200:Responds withan array of objects each object should have the following property", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
         expect(reviews.length).toBe(13);
-				
+
         reviews.forEach((review) => {
-					expect(review)
-						.toMatchObject({
-							review_id: expect.any(Number),
-							title: expect.any(String),
-							owner: expect.any(String),
-							review_img_url: expect.any(String),
-							category: expect.any(String),
-							created_at: expect.any(String),
-							votes: expect.any(Number),
-							comment_count: expect.any(Number),
-						})
-						
+          expect(review).toEqual(
+            expect.objectContaining({
+              review_id: expect.any(Number),
+              title: expect.any(String),
+              owner: expect.any(String),
+              review_img_url: expect.any(String),
+              category: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
         });
         expect(reviews).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("200: The end point should also accept the following queries - sort_by , which sorts the reviews by any valid column (defaults to date)", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toBeSortedBy("votes", { descending: true });
+      });
+  });
+
+  test("200 : Should be sorted by date as a default ", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=created_at")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("200 : Should sort by title ", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toBeSortedBy("title", { descending: true });
+      });
+  });
+
+  test("200 : Should sort by owner ", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=owner")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toBeSortedBy("owner", { descending: true });
+      });
+  });
+
+  test("200 : Should order by descending as a default", () => {
+    return request(app)
+      .get("/api/reviews?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.reviews).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("should ", () => {
+    return request(app)
+			.get(`/api/reviews?category=socialdeduction`)
+			.expect(200)
+			.then(({ body: { reviews } }) => {
+				expect(reviews).toHaveLength(13);
+				reviews.forEach(({ category }) => {
+					expect(category).toBe("social deduction");
+				});
 			});
-	});
+  });
 });
 
-
-
-
-
-describe('GET /api/reviews/:review_id/comments', () => {
-  
-  test('comments should have properties', () => {
+describe("GET /api/reviews/:review_id/comments", () => {
+  test("comments should have properties", () => {
     return request(app)
       .get("/api/reviews/2/comments")
       .expect(200)
-      .then(({body}) => {
-        const {review_idComments} = body;
+      .then(({ body }) => {
+        const { review_idComments } = body;
         expect(review_idComments.length).toBe(3);
         review_idComments.forEach((comment) => {
-          expect(comment).toEqual(expect.objectContaining({
-						comment_id: expect.any(Number),
-						body: expect.any(String),
-						votes: expect.any(Number),
-						author: expect.any(String),
-						review_id: 2,
-						created_at: expect.any(String),
-					}));
-        })
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              body: expect.any(String),
+              votes: expect.any(Number),
+              author: expect.any(String),
+              review_id: 2,
+              created_at: expect.any(String),
+            })
+          );
+        });
       });
-  })
-  test('200: Responds with an array of comments for the given review_id of which each comment should have the following properties in the test ', () => {
-    return request(app).get('/api/reviews/2/comments').expect(200).then(({body}) => {
-      const {review_idComments} = body
-      expect(review_idComments).toEqual([
-				{
-					comment_id : 1 ,
-          body: "I loved this game too!",
-					votes: 16,
-					author: "bainesface",
-					review_id: 2,
-					created_at: "2017-11-22T12:43:33.389Z",
-				},
-        {
-          comment_id : 4,
-					body: "EPIC board game!",
-					votes: 16,
-					author: "bainesface",
-					review_id: 2,
-					created_at: "2017-11-22T12:36:03.389Z",
-				},
-        {
-          comment_id : 5,
-					body: "Now this is a story all about how, board games turned my life upside down",
-					votes: 13,
-					author: "mallionaire",
-					review_id: 2,
-					created_at: "2021-01-18T10:24:05.410Z",
-				},
-			]);
-
-    }) 
   });
-
-  test('Status :400 Should respond with an error message when something not a number passed as the id in the path ', () => {
-     return request(app)
-				.get("/api/reviews/NotANumber/comments")
-				.expect(400)
-				.then(({ body }) => {
-					expect(body.msg).toBe("Bad Request");
-				});
-  });
-
-  test('Status : 404 responds with an error message when a valid number but not a number that matches an id in path', () => {
+  test("200: Responds with an array of comments for the given review_id of which each comment should have the following properties in the test ", () => {
     return request(app)
-			.get("/api/reviews/999/comments")
-			.expect(404)
-			.then(({ body }) => {
-				expect(body.msg).toBe("Not Found");
-			});
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { review_idComments } = body;
+        expect(review_idComments).toEqual([
+          {
+            comment_id: 1,
+            body: "I loved this game too!",
+            votes: 16,
+            author: "bainesface",
+            review_id: 2,
+            created_at: "2017-11-22T12:43:33.389Z",
+          },
+          {
+            comment_id: 4,
+            body: "EPIC board game!",
+            votes: 16,
+            author: "bainesface",
+            review_id: 2,
+            created_at: "2017-11-22T12:36:03.389Z",
+          },
+          {
+            comment_id: 5,
+            body: "Now this is a story all about how, board games turned my life upside down",
+            votes: 13,
+            author: "mallionaire",
+            review_id: 2,
+            created_at: "2021-01-18T10:24:05.410Z",
+          },
+        ]);
+      });
+  });
+
+  test("Status :400 Should respond with an error message when something not a number passed as the id in the path ", () => {
+    return request(app)
+      .get("/api/reviews/NotANumber/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+
+  test("Status : 404 responds with an error message when a valid number but not a number that matches an id in path", () => {
+    return request(app)
+      .get("/api/reviews/999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
   });
   test("status : 200 Responds with an  empty array if review_id has no comment ", () => {
     return request(app)
-			.get("/api/reviews/1/comments")
-			.expect(200)
-			.then(({ body }) => {
-				expect(body.review_idComments).toEqual([]);
-			});
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.review_idComments).toEqual([]);
+      });
   });
 });
 
-
-
-
-
-describe('POST /api/reviews/:review_id/comments', () => {
-  
-  
-  
-  test('Status : 201 responds with an object with the following requests ', () => {
+describe("POST /api/reviews/:review_id/comments", () => {
+  test("Status : 201 responds with an object with the following requests ", () => {
     const newComments = {
-			author: "bainesface",
-			body: "This is a sick game",
+      author: "bainesface",
+      body: "This is a sick game",
     };
-    		
+
     return request(app)
-			.post("/api/reviews/3/comments").send(newComments)
-			.expect(201)
-      .then(({body}) => {
+      .post("/api/reviews/3/comments")
+      .send(newComments)
+      .expect(201)
+      .then(({ body }) => {
         expect(body.returnComment).toEqual(
-					expect.objectContaining({
-						author: "bainesface",
-						body: "This is a sick game",
-					})
-				);
-			});
+          expect.objectContaining({
+            author: "bainesface",
+            body: "This is a sick game",
+          })
+        );
+      });
   });
-  test('status : 400 responds with an error message when review_id is not a number ', () => {
-      const newComments = {
-				author: "bainesface",
-				body: "This is a sick game",
-			};
+  test("status : 400 responds with an error message when review_id is not a number ", () => {
+    const newComments = {
+      author: "bainesface",
+      body: "This is a sick game",
+    };
     return request(app)
-      .post("/api/reviews/notAnumber/comments").send(newComments).expect(400)
-      .then(({body}) => {
-      expect(body.msg).toBe('Bad Request')
-    })
+      .post("/api/reviews/notAnumber/comments")
+      .send(newComments)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
   });
   test("status : 400 response with an error message when  body does not contain both mandatory keys", () => {
-    const newComments = {}
-    return request(app).post('/api/reviews/notAnumber/comments').send(newComments).expect(400).then(({body}) => {
-      expect(body.msg).toBe('Bad Request')
-    })
-  })
-  test("status: 404, response with an error message when user not in the database tries to post", () => {
-    const newComments =
-    {
+    const newComments = {};
+    return request(app)
+      .post("/api/reviews/notAnumber/comments")
+      .send(newComments)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("status : 404 response with an error message when user not in the database tries to post", () => {
+    const newComments = {
       author: "NotAnAuthor",
-      body: "This is a sick game"
+      body: "This is a sick game",
     };
-		return request(app)
-			.post("/api/reviews/3/comments")
-			.send(newComments)
-			.expect(404)
-			.then(({ body }) => {
-				expect(body.msg).toBe("Not Found");
-			});
-	});
+    return request(app)
+      .post("/api/reviews/3/comments")
+      .send(newComments)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
+  });
+});
+
+describe(" DELETE /api/comments/:comment_id", () => {
+  test("status : 204 should delete the given comment by comment_id", () => {
+    return request(app).delete("/api/comments/2").expect(204);
+  });
+
+  test("status : 404 responses with an error message when the comment id in the path does not exist", () => {
+    return request(app)
+      .delete("/api/comments/9999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
+  });
+
+  test("status : 400 responds with an error message when comment_id in path is not a number", () => {
+    return request(app)
+      .delete("/api/comments/NotANumber")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
 });
