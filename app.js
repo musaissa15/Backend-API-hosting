@@ -7,7 +7,8 @@ const {
 	returnUpdatedReviews,
 	returnAllReviews,
 } = require("./controller/reviews.controller");
-const { returnCategories } = require("./controller/categories.controller");
+const {returnCategories} = require("./controller/categories.controller");
+const {json, getAPI} = require('./controller/api.controller')
 const {
 	returnComments,
 	postCommentByReviewId,
@@ -22,6 +23,8 @@ const {
 
 app.use(cors());
 app.use(express.json());
+
+app.get('/api', getAPI)
 
 app.get("/api/categories", returnCategories);
 
