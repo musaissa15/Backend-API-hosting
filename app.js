@@ -22,6 +22,7 @@ const {
 } = require("./errorHandlers");
 
 app.use(cors());
+
 app.use(express.json());
 
 app.get('/api', getAPI)
