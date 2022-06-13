@@ -8,7 +8,7 @@ const {
 	returnAllReviews,
 } = require("./controller/reviews.controller");
 const {returnCategories} = require("./controller/categories.controller");
-const {json, getAPI} = require('./controller/api.controller')
+const {getAPI} = require('./controller/api.controller')
 const {
 	returnComments,
 	postCommentByReviewId,
