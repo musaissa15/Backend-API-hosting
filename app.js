@@ -1,23 +1,26 @@
+const cors = require("cors");
+
 const express = require("express");
 const app = express();
 const {
-  returnReviews,
-  returnUpdatedReviews,
-  returnAllReviews,
+	returnReviews,
+	returnUpdatedReviews,
+	returnAllReviews,
 } = require("./controller/reviews.controller");
 const { returnCategories } = require("./controller/categories.controller");
 const {
-  returnComments,
-  postCommentByReviewId,
-  removedComments,
+	returnComments,
+	postCommentByReviewId,
+	removedComments,
 } = require("./controller/comments.controller");
 const { returnUsers } = require("./controller/users.controller");
 const {
-  handleCustomErrors,
-  handlePsqlErrors,
-  handleServerErrrors,
+	handleCustomErrors,
+	handlePsqlErrors,
+	handleServerErrrors,
 } = require("./errorHandlers");
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/api/categories", returnCategories);
@@ -37,7 +40,7 @@ app.post("/api/reviews/:reviews/comments", postCommentByReviewId);
 app.delete("/api/comments/:comment_id", removedComments);
 
 app.all("/*", (request, response, next) => {
-  response.status(404).send({ msg: "Invalid Path" });
+	response.status(404).send({ msg: "Invalid Path" });
 });
 
 app.use(handleCustomErrors);
