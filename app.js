@@ -1,3 +1,4 @@
+const cors = require('cors')
 const express = require("express");
 const {
   returnCategories,
@@ -5,6 +6,8 @@ const {
   returnUpdatedReviews,
 } = require("./controller/controller");
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
