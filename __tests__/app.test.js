@@ -176,27 +176,27 @@ describe("GET /api/reviews", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
-      .then(({ body }) => {
-        const { reviews } = body;
-        expect(reviews.length).toBe(13);
-
+      .then(({body}) => {
+        const {reviews} = body;
+        expect(reviews.length).toBe(13);        
+        expect(reviews).toBeInstanceOf(Array);
         reviews.forEach((review) => {
           expect(review).toEqual(
             expect.objectContaining({
               review_id: expect.any(Number),
               title: expect.any(String),
+              designer: expect.any(String),
               owner: expect.any(String),
               review_img_url: expect.any(String),
               category: expect.any(String),
               created_at: expect.any(String),
               votes: expect.any(Number),
-              comment_count: expect.any(Number),
-            })
-          );
+              comment_count: expect.any(String),
+            }));
+              
         });
-        expect(reviews).toBeSortedBy("created_at", { descending: true });
       });
-  });
+  })
 
   test("200: The end point should also accept the following queries - sort_by , which sorts the reviews by any valid column (defaults to date)", () => {
     return request(app)
@@ -236,23 +236,49 @@ describe("GET /api/reviews", () => {
 
   test("200 : Should order by descending as a default", () => {
     return request(app)
-      .get("/api/reviews?order=asc")
+      .get("/api/reviews?order=desc")
       .expect(200)
       .then(({ body }) => {
         expect(body.reviews).toBeSortedBy("created_at", { descending: true });
       });
   });
-  test("should ", () => {
+  test("should sort reviews by category", () => {
     return request(app)
-			.get(`/api/reviews?category=socialdeduction`)
+			.get(`/api/reviews?category=social deduction`)
 			.expect(200)
 			.then(({ body: { reviews } }) => {
-				expect(reviews).toHaveLength(13);
+				expect(reviews).toHaveLength(11);
 				reviews.forEach(({ category }) => {
 					expect(category).toBe("social deduction");
 				});
 			});
   });
+
+
+  test("status: 400 should respond with an error when user tries to enter a non-valid sort_by query ", () => {
+    return request(app)
+			.get("/api/reviews?sort_by=pineapples")
+      .expect(400).then(({body}) => {
+        expect(body.msg).toBe("Bad Request");
+      })
+  });
+  test("status: 404 should respond with an error message user tries to enter a non-valid order_by query", () => {
+		return request(app)
+			.get("/api/reviews?order=nonexistent")
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Bad Request");
+			});
+	});
+ test("status: 404 should respond with an error message when  user tries to enter a non-existent category ", () => {
+		return request(app)
+			.get("/api/reviews?category=bread")
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe("Not Found");
+			});
+ });
+
 });
 
 describe("GET /api/reviews/:review_id/comments", () => {

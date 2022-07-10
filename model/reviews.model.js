@@ -1,5 +1,6 @@
 const db = require("../db/connection");
 
+
 exports.fetchReviews = (review_id) => {
 	return db
 		.query(
@@ -48,13 +49,13 @@ exports.updateReviews = (review_id, inc_votes) => {
 		});
 };
 
-exports.fetchAllReviews = (
+exports.fetchAllReviews = async ({
 	sort_by = "created_at",
 	order = "desc",
-	category
-) => {
+	category,
+}) => {
 	const validSortBy = ["created_at", "votes", "owner", "title"];
-	const validOrderBy = ["asc, desc"];
+	const validOrderBy = ["asc", "desc"];
 	const validCategory = [];
 
 	let reviewsQueryStr = `
@@ -68,7 +69,7 @@ exports.fetchAllReviews = (
 		!validSortBy.includes(sort_by) ||
 		!isNaN(category)
 	) {
-		return Promise.reject({ status: 400, msg: "input is not valid" });
+		return Promise.reject({ status: 400, msg: "Bad Request" });
 	}
 
 	if (category) {
@@ -79,26 +80,82 @@ exports.fetchAllReviews = (
       `;
 		const checkCategory = [category];
 
-		return db.query(checkCategoryQueryStr, checkCategory).then((rep) => {
-			console.log(rep);
-		});
+		const { rows } = await db.query(checkCategoryQueryStr, checkCategory);
 
-		// if (!rows.length) {
-		// 	return Promise.reject({
-		// 		status: 404,
-		// 		msg: `category does not exist`,
-		// 	});
-		// } else {
-		// 	reviewsQueryStr += ` WHERE reviews.category = $1`;
-		// 	validCategory.push(category);
-		// }
+		if (!rows.length) {
+			return Promise.reject({
+				status: 404,
+				msg: 'Not Found',
+			});
+		} else {
+			reviewsQueryStr += ` WHERE reviews.category = $1`;
+			validCategory.push(category);
+		}
 	}
 
 	reviewsQueryStr += ` 
     GROUP BY reviews.review_id
     ORDER BY reviews.${sort_by} ${order}`;
 
-	return db.query(reviewsQueryStr, validCategory).then((reviews) => {
-		return reviews.rows;
-	});
+	const { rows } = await db.query(reviewsQueryStr, validCategory);
+
+	return rows;
 };
+
+// exports.fetchAllReviews = (
+// 	sort_by = "created_at",
+// 	order = "desc",
+// 	category
+// ) => {
+// 	const validSortBy = ["created_at", "votes", "owner"];
+// 	const validOrderBy = ["asc, desc"];
+// 	const validCategory = [];
+
+// 	let reviewsQueryStr = `
+//   SELECT reviews.*, COUNT(comments.review_id) AS comment_count
+//   FROM reviews
+//   LEFT JOIN comments
+//   ON comments.review_id = reviews.review_id`;
+
+// 	if (
+// 		!validOrderBy.includes(order) ||
+// 		!validSortBy.includes(sort_by) ||
+// 		!isNaN(category)
+// 	) {
+// 		return Promise.reject({ status: 400, msg: "input is not valid" });
+// 	}
+
+// 	if (category) {
+// 		let checkCategoryQueryStr = `
+//       SELECT *
+//       FROM categories
+//       WHERE slug = $1
+//       `;
+// 		const checkCategory = [category];
+
+
+// 		return db.query(checkCategoryQueryStr, checkCategory)
+// 			.then(({rows}) => {
+		
+				
+// 						if (!rows.length) {
+// 							return Promise.reject({
+// 								status: 404,
+// 								msg: `category does not exist`,
+// 							});
+// 						} else {
+// 							reviewsQueryStr += ` WHERE reviews.category = $1`;
+// 							validCategory.push(category);
+// 						}
+// 		});
+// 	}
+
+// 	reviewsQueryStr += ` 
+//     GROUP BY reviews.review_id
+//     ORDER BY reviews.${sort_by} ${order}`;
+
+// 	return db.query(reviewsQueryStr, validCategory).then(({rows}) => {
+// 		console.log(rows);
+// 		return rows;
+// 	});
+// };
