@@ -1,15 +1,33 @@
-const cors = require('cors')
+const cors = require("cors");
+
 const express = require("express");
-const {
-  returnCategories,
-  returnReviews,
-  returnUpdatedReviews,
-} = require("./controller/controller");
 const app = express();
+const {
+	returnReviews,
+	returnUpdatedReviews,
+	returnAllReviews,
+} = require("./controller/reviews.controller");
+const {returnCategories} = require("./controller/categories.controller");
+const {getAPI} = require('./controller/api.controller')
+const {
+	returnComments,
+	postCommentByReviewId,
+	removedComments,
+} = require("./controller/comments.controller");
+const { returnUsers } = require("./controller/users.controller");
+const {
+	handleCustomErrors,
+	handlePsqlErrors,
+	handleServerErrrors,
+} = require("./errorHandlers");
+
+app.use(cors());
 
 app.use(cors());
 
 app.use(express.json());
+
+app.get('/api', getAPI)
 
 app.get("/api/categories", returnCategories);
 
@@ -17,29 +35,24 @@ app.get("/api/reviews/:review_id", returnReviews);
 
 app.patch("/api/reviews/:review_id", returnUpdatedReviews);
 
+app.get("/api/users", returnUsers);
+
+app.get("/api/reviews", returnAllReviews);
+
+app.get("/api/reviews/:review_id/comments", returnComments);
+
+app.post("/api/reviews/:reviews/comments", postCommentByReviewId);
+
+app.delete("/api/comments/:comment_id", removedComments);
+
 app.all("/*", (request, response, next) => {
-  response.status(404).send({ msg: "Invalid Path" });
+	response.status(404).send({ msg: "Invalid Path" });
 });
 
-app.use((error, request, response, next) => {
-  if (error.status && error.msg) {
-    response.status(error.status).send({ msg: error.msg });
-  } else if (error.code === "22P02") {
-    response.status(400).send({msg: "Invalid input"});
-   }
-  else next(error);
-});
+app.use(handleCustomErrors);
 
-app.use((error, request, response, next) => {
-	if (error.code === "23502") {
-		response.status(400).send({ msg: "Bad Request" });
-	} else {
-		next(error);
-	}
-});
+app.use(handlePsqlErrors);
 
-app.use((error, request, response, next) => {
-  response.status(500).send("Server Error!");
-});
+app.use(handleServerErrrors);
 
 module.exports = app;
