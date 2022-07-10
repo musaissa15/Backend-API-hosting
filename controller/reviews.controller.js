@@ -1,3 +1,4 @@
+const {query} = require("../db/connection");
 const {
   fetchReviews,
   updateReviews,
@@ -28,14 +29,26 @@ exports.returnUpdatedReviews = (request, response, next) => {
     });
 };
 
+// exports.returnAllReviews = (request, response, next) => {
+//   const {sort_by, order, category} = request.query;
+//   console.log(request.query);
+//   fetchAllReviews(sort_by, order, category)
+//     .then((reviews) => {
+//       response.status(200).send({ reviews });
+//     })
+//     .catch((error) => {
+//       next(error);
+//     });
+// };
+
 exports.returnAllReviews = (request, response, next) => {
-  const {sort_by, order, category} = request.query;
-  console.log(request.query);
-  fetchAllReviews(sort_by, order, category)
-    .then((reviews) => {
-      response.status(200).send({ reviews });
-    })
+	const { query } = request
+
+	fetchAllReviews(query)
+		.then((reviews) => {
+			response.status(200).send({ reviews });
+		})
     .catch((error) => {
-      next(error);
+      next(error)
     });
 };
