@@ -5,6 +5,8 @@ const {
   deleteTheComments,
 } = require("../model/comments.model");
 const { fetchReviews } = require("../model/reviews.model");
+
+
 exports.returnComments = (request, response, next) => {
   const { review_id } = request.params;
 
