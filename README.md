@@ -1,5 +1,5 @@
 
-# Musa's Games API
+# Musa's NC-Games API
 
 ## How to clone my repository locally
 
@@ -15,7 +15,7 @@ git clone https://github.com/musaissa15/back-end-nc-games-musa
 cd be-nc-games
 ```
 
-3 - open it up on Vs Code using the terminal command:
+3 - open it up on VSCode using the terminal command:
 
 ```
 code .
