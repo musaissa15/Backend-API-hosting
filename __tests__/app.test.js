@@ -40,7 +40,7 @@ describe("Get /api/categories", () => {
 });
 
 describe("GET /api/reviews/:review_id", () => {
-  test("200: response with all revies with all its properties", () => {
+  test("200: response with all reviews with all its properties", () => {
     return request(app)
       .get("/api/reviews/1")
       .expect(200)
