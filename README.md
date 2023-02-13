@@ -27,13 +27,15 @@ code .
 npm i
 ```
 
-5 - create these 2 files in the repository:
+5 - create these 3 files in the repository:
 
 ```git
 
 '.env.test'
 
 .env.development'
+
+.env.production
 
 ```
 
