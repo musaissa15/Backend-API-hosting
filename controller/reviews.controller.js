@@ -1,4 +1,4 @@
-const {query} = require("../db/connection");
+
 const {
   fetchReviews,
   updateReviews,
