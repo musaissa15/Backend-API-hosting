@@ -1,5 +1,5 @@
 const db = require("../db/connection");
-const { fetchCategories } = require("../model/catergories.model");
+
 exports.fetchComments = (review_id) => {
   return db
     .query(`SELECT * FROM comments WHERE review_id = $1`, [review_id])
