@@ -1,4 +1,4 @@
-const { request, response } = require("../app");
+
 const {
   fetchComments,
   insertCommentsByReviewId,
